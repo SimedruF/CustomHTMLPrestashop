@@ -1,5 +1,19 @@
 {* modules/customhtml/views/templates/hook/customhtml.tpl *}
 
+You can customize this template to change how the HTML content is rendered.
+
+## Compatibility
+
+- PrestaShop version: 1.7 and above.
+
+## Author
+
+Developed by **AutomaticHouseSystems**.
+
+## License
+
+This module is licensed under the [MIT License](LICENSE).
+
 {if $html_content}
     <div class="custom-html-wrapper">
         <style>
@@ -16,9 +30,8 @@
         <div class="custom-content">
             {$html_content nofilter}
         </div>
-		<script src="https://mny.ro/npId.js?p=149682"
-				type="text/javascript"
-				data-version="orizontal"
-				data-contrast-color="#ffffff"></script>
-    </div>
+        <div class="custom-html-{$hook_name}">
+            {$html_content nofilter}  
+        </div>
+
 {/if}

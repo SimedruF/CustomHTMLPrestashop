@@ -32,13 +32,18 @@ class CustomHTML extends Module
 			&& $this->registerHook('displayLeftColumn')
 			&& $this->registerHook('displayRightColumn')
 			&& Configuration::updateValue('CUSTOM_HTML_HOME', '')
-			&& Configuration::updateValue('CUSTOM_HTML_FOOTER', '');
+			&& Configuration::updateValue('CUSTOM_HTML_FOOTER', '')
+            && Configuration::updateValue('CUSTOM_HTML_LEFT', '')
+            && Configuration::updateValue('CUSTOM_HTML_RIGHT', '');
     }
 
     public function uninstall()
     {
         return parent::uninstall() 
-            && Configuration::deleteByName('CUSTOM_HTML_CONTENT');
+            && Configuration::deleteByName('CUSTOM_HTML_HOME')
+            && Configuration::deleteByName('CUSTOM_HTML_FOOTER') 
+            && Configuration::deleteByName('CUSTOM_HTML_LEFT')
+            && Configuration::deleteByName('CUSTOM_HTML_RIGHT');
     }
 
     public function getContent()
@@ -47,6 +52,8 @@ class CustomHTML extends Module
     if (Tools::isSubmit('submitCustomHtml')) {
 			Configuration::updateValue('CUSTOM_HTML_HOME', Tools::getValue('CUSTOM_HTML_HOME'));
 			Configuration::updateValue('CUSTOM_HTML_FOOTER', Tools::getValue('CUSTOM_HTML_FOOTER'));
+            Configuration::updateValue('CUSTOM_HTML_FOOTER', Tools::getValue('CUSTOM_HTML_LEFT'));
+            Configuration::updateValue('CUSTOM_HTML_FOOTER', Tools::getValue('CUSTOM_HTML_RIGHT'));
 			$this->_clearCache('*'); // Curăță cache-ul
 			$output .= $this->displayConfirmation($this->l('Settings updated'));
         }
@@ -66,7 +73,7 @@ class CustomHTML extends Module
                     [
                         'type' => 'textarea',
                         'label' => $this->l('HTML Content'),
-                        'name' => 'CUSTOM_HTML_CONTENT',
+                        'name' => 'CUSTOM_HTML_HOME',
                         'autoload_rte' => true,
                         'cols' => 60,
                         'rows' => 10
@@ -75,6 +82,22 @@ class CustomHTML extends Module
 						'type' => 'textarea',
 						'label' => $this->l('Footer HTML'),
 						'name' => 'CUSTOM_HTML_FOOTER',
+						'autoload_rte' => true,
+						'cols' => 60,
+						'rows' => 10
+					],
+                    [
+						'type' => 'textarea',
+						'label' => $this->l('Left column HTML'),
+						'name' => 'CUSTOM_HTML_LEFT',
+						'autoload_rte' => true,
+						'cols' => 60,
+						'rows' => 10
+					],
+                    [
+						'type' => 'textarea',
+						'label' => $this->l('Right column HTML'),
+						'name' => 'CUSTOM_HTML_RIGHT',
 						'autoload_rte' => true,
 						'cols' => 60,
 						'rows' => 10
@@ -103,26 +126,14 @@ class CustomHTML extends Module
     public function getConfigFieldsValues()
     {
         return [
-            'CUSTOM_HTML_CONTENT' => Configuration::get('CUSTOM_HTML_CONTENT')
+            'CUSTOM_HTML_HOME' => Configuration::get('CUSTOM_HTML_HOME'),
+            'CUSTOM_HTML_FOOTER' => Configuration::get('CUSTOM_HTML_FOOTER'),
+            'CUSTOM_HTML_LEFT' => Configuration::get('CUSTOM_HTML_LEFT'),
+            'CUSTOM_HTML_RIGHT' => Configuration::get('CUSTOM_HTML_RIGHT')
         ];
     }
 
-  /*  public function hookDisplayHome($params)
-    {
-            $this->context->smarty->assign([
-        'html_content' => Configuration::get('CUSTOM_HTML_CONTENT'),
-        'hook_name' => 'home' // pentru varianta avansată
-    ]);
-
-    return $this->display(__FILE__, 'customhtml.tpl');
-    }*/
-	// Adaugă o nouă metodă pentru footer:
-/*	public function hookDisplayFooter($params)
-	{
-		return $this->hookDisplayHome($params); // Folosește același conținut ca în home
-	}*/
-	
-	public function hookDisplayHome($params)
+    public function hookDisplayHome($params)
 	{
 		$this->context->smarty->assign([
 			'html_content' => Configuration::get('CUSTOM_HTML_HOME'),
@@ -140,9 +151,22 @@ class CustomHTML extends Module
 		return $this->display(__FILE__, 'views/templates/hook/customhtml.tpl');
 	}
 
-	//public function getTemplatePath()
-	//{
-//		return _PS_MODULE_DIR_.$this->name.'/views/templates/hook/customhtml.tpl';
-	//}
-		// Adaugă metode hook pentru alte poziții după nevoie
+    public function hookDisplayLeftColumn($params)
+	{
+		$this->context->smarty->assign([
+			'html_content' => Configuration::get('CUSTOM_HTML_LEFT'),
+			'hook_name' => 'footer',
+		]);
+		return $this->display(__FILE__, 'views/templates/hook/customhtml.tpl');
+	}
+
+    public function hookDisplayRightColumn($params)
+	{
+		$this->context->smarty->assign([
+			'html_content' => Configuration::get('CUSTOM_HTML_RIGHT'),
+			'hook_name' => 'footer',
+		]);
+		return $this->display(__FILE__, 'views/templates/hook/customhtml.tpl');
+	}
+     
 }
