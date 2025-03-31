@@ -36,4 +36,4 @@ The module uses the following hooks to display content:
 
 ## Template
 
-The module uses a Smarty template located at:
+The module uses a Smarty template located at:  views/templates/hook/customhtml.tpl

@@ -9,7 +9,7 @@ class CustomHTML extends Module
     {
         $this->name = 'CustomHTML';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.0';
+        $this->version = '1.0.1';
         $this->author = 'AutomaticHouseSystems';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = [
@@ -49,16 +49,16 @@ class CustomHTML extends Module
     public function getContent()
     {
         $output = '';
-    if (Tools::isSubmit('submitCustomHtml')) {
-			Configuration::updateValue('CUSTOM_HTML_HOME', Tools::getValue('CUSTOM_HTML_HOME'));
-			Configuration::updateValue('CUSTOM_HTML_FOOTER', Tools::getValue('CUSTOM_HTML_FOOTER'));
-            Configuration::updateValue('CUSTOM_HTML_FOOTER', Tools::getValue('CUSTOM_HTML_LEFT'));
-            Configuration::updateValue('CUSTOM_HTML_FOOTER', Tools::getValue('CUSTOM_HTML_RIGHT'));
-			$this->_clearCache('*'); // Curăță cache-ul
-			$output .= $this->displayConfirmation($this->l('Settings updated'));
+        if (Tools::isSubmit('submitCustomHtml')) {
+            Configuration::updateValue('CUSTOM_HTML_HOME', Tools::getValue('CUSTOM_HTML_HOME', false));
+            Configuration::updateValue('CUSTOM_HTML_FOOTER', Tools::getValue('CUSTOM_HTML_FOOTER', false));
+            Configuration::updateValue('CUSTOM_HTML_LEFT', Tools::getValue('CUSTOM_HTML_LEFT', false));
+            Configuration::updateValue('CUSTOM_HTML_RIGHT', Tools::getValue('CUSTOM_HTML_RIGHT', false));
+            $this->_clearCache('*'); // Curăță cache-ul
+            $output .= $this->displayConfirmation($this->l('Settings updated'));
         }
 
-        return $output.$this->renderForm();
+        return $output . $this->renderForm();
     }
 
     public function renderForm()
@@ -144,11 +144,17 @@ class CustomHTML extends Module
 
 	public function hookDisplayFooter($params)
 	{
-		$this->context->smarty->assign([
-			'html_content' => Configuration::get('CUSTOM_HTML_FOOTER'),
-			'hook_name' => 'footer',
-		]);
-		return $this->display(__FILE__, 'views/templates/hook/customhtml.tpl');
+       $htmlContent = Configuration::get('CUSTOM_HTML_FOOTER');
+	   if (!$htmlContent) {
+        return '<p>Debug: CUSTOM_HTML_FOOTER is empty</p>';
+       }
+
+        $this->context->smarty->assign([
+            'html_content' => $htmlContent,
+            'hook_name' => 'footer',
+        ]);
+
+   	  return $this->display(__FILE__, 'views/templates/hook/customhtml.tpl');
 	}
 
     public function hookDisplayLeftColumn($params)
