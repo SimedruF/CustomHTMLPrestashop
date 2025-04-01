@@ -145,9 +145,9 @@ class CustomHTML extends Module
 	public function hookDisplayFooter($params)
 	{
        $htmlContent = Configuration::get('CUSTOM_HTML_FOOTER');
-	   if (!$htmlContent) {
+	  /* if (!$htmlContent) {
         return '<p>Debug: CUSTOM_HTML_FOOTER is empty</p>';
-       }
+       }*/
 
         $this->context->smarty->assign([
             'html_content' => $htmlContent,
